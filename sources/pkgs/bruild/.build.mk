@@ -1,0 +1,4 @@
+BRUILD_NAME = bruild
+
+HOST_PKGS += BRUILD
+

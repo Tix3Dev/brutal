@@ -1,0 +1,7 @@
+{
+	"target": "pkgs-test-bruild",
+	"type":"bin",
+	"dependencies": [
+		"libs.brutal"
+	]
+}
