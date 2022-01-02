@@ -12,12 +12,14 @@ typedef struct
     Vec(Str) args;
 } CProcMacro;
 
+typedef Vec(Str) CProcIncludes;
+
 typedef struct
 {
     Lexemes source;
     Str filename;
     Vec(CProcMacro) macros;
-    Vec(Str) files_included;
+    CProcIncludes files_included;
     Vec(Str) include_path;
     Vec(Str) inside_macro;
     Alloc *alloc;
@@ -34,3 +36,5 @@ void cproc_parse_define(Lex *source, CProc *ctx);
 CProcMacro *cproc_define(CProc *ctx, Str name, Str value);
 
 void cproc_define_arg(CProcMacro *targ, Str name);
+
+CProcIncludes cproc_get_includes(Lex *source, Alloc *alloc);

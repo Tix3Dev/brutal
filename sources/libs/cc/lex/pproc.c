@@ -390,3 +390,75 @@ Lex cproc_file(Lex *source, Str filename, Alloc *alloc)
     cproc_lex(&result, source, &ctx);
     return result;
 }
+
+CInclude cproc_parse_include(Lex *source, Alloc *alloc)
+{
+    CInclude include = {};
+
+    lex_skip_type(source, CLEX_WHITESPACE);
+    if (lex_curr_type(source) == CLEX_STRING)
+    {
+        include.path = str_dup(lex_curr(source).str, alloc); // we need to make them both allocated strings
+        include.is_system = false;
+        lex_next(source);
+        return include;
+    }
+    else if (lex_curr_type(source) == CLEX_LCHEVRON)
+    {
+        lex_next(source);
+
+        Str result_path = str$("");
+        while (!lex_skip_type(source, CLEX_RCHEVRON))
+        {
+            result_path = str_concat(result_path, lex_curr(source).str, alloc);
+            lex_next(source);
+        }
+
+        include.path = result_path;
+        include.is_system = true;
+    }
+    return include;
+}
+
+CProcIncludes cproc_get_includes(Lex *source, Alloc *alloc)
+{
+    CProcIncludes result = {};
+    vec_init(&result, alloc);
+    bool can_be_directive = true;
+
+    while (!lex_ended(source))
+    {
+        Lexeme curr = lex_curr(source);
+
+        switch (curr.type)
+        {
+        case CLEX_NEWLINE:
+            lex_next(source);
+            can_be_directive = true;
+            break;
+
+        case CLEX_POUND:
+            lex_next(source);
+            if (can_be_directive)
+            {
+                lex_skip_type(source, CLEX_WHITESPACE);
+
+                if (!(lex_curr_type(source) == CLEX_IDENT) || !str_eq(lex_curr(source).str, str$("include")))
+                {
+                    break;
+                }
+
+                can_be_directive = false;
+                vec_push(&result, cproc_parse_include(source, alloc));
+            }
+
+            break;
+
+        default:
+            lex_next(source);
+            break;
+        }
+    }
+    return result;
+}
+
