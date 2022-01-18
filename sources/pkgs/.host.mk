@@ -14,6 +14,8 @@ LIBS_HOST_SRC = \
 	$(wildcard sources/libs/bvm/*.c)       \
 	$(wildcard sources/libs/fs/*.c)       \
 	$(wildcard sources/libs/fs/*/*.c)       \
+	$(wildcard sources/libs/ttf/*.c) \
+	$(wildcard sources/libs/ttf/*/*.c) \
 	$(wildcard sources/libs/bvm/*/*.c)       \
 	$(wildcard sources/libs/json/*.c)     \
 	$(wildcard sources/libs/elf/*.c)      \
